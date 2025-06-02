@@ -30,18 +30,15 @@ def assign_use_value(products):
     # Assign a random use_value (or use category, or shelf-life if you have it)
     np.random.seed(42)
     products['use_value'] = np.random.randint(1, 30, size=len(products))
-    # Assign a random price if not present
-    if 'price' not in products.columns:
-        products['price'] = np.random.uniform(1, 10, size=len(products))
     return products
 
 def create_promotions(frequent_pairs, products, discount=0.5, top_n=10):
-    # For each pair, offer the higher-use-value item at a discount when the other is bought
     promos = []
-    for pair in frequent_pairs[:top_n]:  # Limit to top N for speed
+    for pair in frequent_pairs[:top_n]:
         p1, p2 = pair
         uv1 = products.loc[products['product_id'] == p1, 'use_value'].values[0]
         uv2 = products.loc[products['product_id'] == p2, 'use_value'].values[0]
+        # Always make the higher use_value product the "get" item
         if uv1 > uv2:
             promos.append({'buy': p2, 'get': p1, 'discount': discount})
         else:
